@@ -34,11 +34,11 @@ class BrandKitController extends Controller
 
         $validator = Validator::make($request->all(), [
             'user_id' => 'nullable|integer',
-            'primary_color' => 'required|string',
-            'secondary_color' => 'required|string',
-            'accent_color' => 'required|string',
+            'primary_color' => ['required', 'string', 'regex:/^#([a-fA-F0-9]{6}|[a-fA-F0-9]{3})$/'],
+            'secondary_color' => ['required', 'string', 'regex:/^#([a-fA-F0-9]{6}|[a-fA-F0-9]{3})$/'],
+            'accent_color' => ['required', 'string', 'regex:/^#([a-fA-F0-9]{6}|[a-fA-F0-9]{3})$/'],
             'font_family' => 'required|string|max:255',
-            'logo_url' => 'nullable|string',
+            'logo_url' => 'nullable|string|max:2048',
             'watermark_text' => 'nullable|string|max:255',
         ]);
 
