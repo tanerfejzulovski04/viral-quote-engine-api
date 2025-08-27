@@ -1,0 +1,17 @@
+{
+    "name": "tanerfejzulovski04/viral-quote-engine-api",
+    "description": "Viral Quote Engine API with server-side rendering",
+    "type": "project",
+    "require": {
+        "php": "^8.1",
+        "spatie/browsershot": "^4.0",
+        "vlucas/phpdotenv": "^5.5"
+    },
+    "autoload": {
+        "psr-4": {
+            "App\\": "src/"
+        }
+    },
+    "minimum-stability": "stable",
+    "prefer-stable": true
+}
