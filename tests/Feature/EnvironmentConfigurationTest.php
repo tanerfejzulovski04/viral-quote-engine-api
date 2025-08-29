@@ -31,11 +31,11 @@ class EnvironmentConfigurationTest extends TestCase
     {
         // We need to test the actual config files, not the test-overridden values
         $databaseConfig = config('database.connections.pgsql');
-        
+
         $this->assertEquals('pgsql', $databaseConfig['driver']);
         $this->assertEquals('127.0.0.1', $databaseConfig['host']);
         $this->assertEquals(5432, $databaseConfig['port']);
-        
+
         // The database name and username will be overridden during testing,
         // but we can verify the connection configuration exists
         $this->assertArrayHasKey('database', $databaseConfig);
@@ -50,16 +50,16 @@ class EnvironmentConfigurationTest extends TestCase
     {
         $envExamplePath = base_path('.env.example');
         $this->assertFileExists($envExamplePath);
-        
+
         $envExampleContent = file_get_contents($envExamplePath);
-        
+
         // Check for required database environment variables
         $this->assertStringContainsString('DB_CONNECTION=pgsql', $envExampleContent);
         $this->assertStringContainsString('DB_HOST=127.0.0.1', $envExampleContent);
         $this->assertStringContainsString('DB_PORT=5432', $envExampleContent);
         $this->assertStringContainsString('DB_DATABASE=viral_quote_engine', $envExampleContent);
         $this->assertStringContainsString('DB_USERNAME=postgres', $envExampleContent);
-        
+
         // Check for required app configuration
         $this->assertStringContainsString('FRONTEND_URL=http://localhost:5173', $envExampleContent);
         $this->assertStringContainsString('APP_NAME="Viral Quote Engine API"', $envExampleContent);

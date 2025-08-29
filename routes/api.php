@@ -11,6 +11,6 @@ Route::get('/user', function (Request $request) {
 Route::get('/health', function () {
     return response()->json([
         'status' => 'ok',
-        'message' => 'Viral Quote Engine API is running'
+        'message' => 'Viral Quote Engine API is running',
     ]);
 });

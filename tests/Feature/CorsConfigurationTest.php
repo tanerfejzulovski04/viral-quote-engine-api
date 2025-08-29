@@ -2,7 +2,6 @@
 
 namespace Tests\Feature;
 
-use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
 class CorsConfigurationTest extends TestCase
@@ -21,7 +20,7 @@ class CorsConfigurationTest extends TestCase
         $response->assertHeader('Access-Control-Allow-Credentials', 'true');
         $response->assertJson([
             'status' => 'ok',
-            'message' => 'Viral Quote Engine API is running'
+            'message' => 'Viral Quote Engine API is running',
         ]);
     }
 
@@ -35,7 +34,7 @@ class CorsConfigurationTest extends TestCase
         $response->assertStatus(200);
         $response->assertJson([
             'status' => 'ok',
-            'message' => 'Viral Quote Engine API is running'
+            'message' => 'Viral Quote Engine API is running',
         ]);
     }
 
@@ -45,26 +44,26 @@ class CorsConfigurationTest extends TestCase
     public function test_cors_configuration_is_properly_set(): void
     {
         $corsConfig = config('cors');
-        
+
         // Check paths include API
         $this->assertContains('api/*', $corsConfig['paths']);
-        
+
         // Check allowed methods include required ones
         $allowedMethods = $corsConfig['allowed_methods'];
         $requiredMethods = ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'];
-        
+
         foreach ($requiredMethods as $method) {
             $this->assertContains($method, $allowedMethods, "Method {$method} should be allowed");
         }
-        
+
         // Check that frontend URL is in allowed origins
         $allowedOrigins = $corsConfig['allowed_origins'];
         $frontendUrl = env('FRONTEND_URL', 'http://localhost:5173');
         $this->assertContains($frontendUrl, $allowedOrigins, 'Frontend URL should be in allowed origins');
-        
+
         // Check credentials are supported
         $this->assertTrue($corsConfig['supports_credentials'], 'CORS should support credentials');
-        
+
         // Check max age is set
         $this->assertGreaterThan(0, $corsConfig['max_age'], 'Max age should be greater than 0');
     }
