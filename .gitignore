@@ -17,3 +17,10 @@ Homestead.json
 Homestead.yaml
 .DS_Store
 Thumbs.db
+/bootstrap/cache/
+/storage/logs/
+/storage/framework/cache/
+/storage/framework/sessions/
+/storage/framework/views/
+/database/database.sqlite
+composer.lock
