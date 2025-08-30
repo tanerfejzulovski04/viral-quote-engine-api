@@ -13,7 +13,7 @@ A Laravel 11 API for managing and serving viral quotes.
 2. Copy `.env.example` to `.env`
 3. Install dependencies: `composer install`
 4. Generate application key: `php artisan key:generate`
-5. Create database file: `touch database/database.sqlite`
+5. Configure PostgreSQL database settings in `.env`
 6. Run migrations: `php artisan migrate`
 
 ## Development
