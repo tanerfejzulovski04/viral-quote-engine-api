@@ -1,11 +1,5 @@
 <?php
 
-<<<<<<< HEAD
-return [
-    'default' => env('DB_CONNECTION', 'sqlite'),
-
-    'connections' => [
-=======
 use Illuminate\Support\Str;
 
 return [
@@ -37,17 +31,12 @@ return [
 
     'connections' => [
 
->>>>>>> origin/main
         'sqlite' => [
             'driver' => 'sqlite',
             'url' => env('DB_URL'),
             'database' => env('DB_DATABASE', database_path('database.sqlite')),
             'prefix' => '',
             'foreign_key_constraints' => env('DB_FOREIGN_KEYS', true),
-<<<<<<< HEAD
-        ],
-        
-=======
             'busy_timeout' => null,
             'journal_mode' => null,
             'synchronous' => null,
@@ -93,19 +82,13 @@ return [
             ]) : [],
         ],
 
->>>>>>> origin/main
         'pgsql' => [
             'driver' => 'pgsql',
             'url' => env('DB_URL'),
             'host' => env('DB_HOST', '127.0.0.1'),
             'port' => env('DB_PORT', '5432'),
-<<<<<<< HEAD
-            'database' => env('DB_DATABASE', 'forge'),
-            'username' => env('DB_USERNAME', 'forge'),
-=======
             'database' => env('DB_DATABASE', 'laravel'),
             'username' => env('DB_USERNAME', 'root'),
->>>>>>> origin/main
             'password' => env('DB_PASSWORD', ''),
             'charset' => env('DB_CHARSET', 'utf8'),
             'prefix' => '',
@@ -113,10 +96,6 @@ return [
             'search_path' => 'public',
             'sslmode' => 'prefer',
         ],
-<<<<<<< HEAD
-    ],
-
-=======
 
         'sqlsrv' => [
             'driver' => 'sqlsrv',
@@ -146,14 +125,10 @@ return [
     |
     */
 
->>>>>>> origin/main
     'migrations' => [
         'table' => 'migrations',
         'update_date_on_publish' => true,
     ],
-<<<<<<< HEAD
-];
-=======
 
     /*
     |--------------------------------------------------------------------------
@@ -197,4 +172,3 @@ return [
     ],
 
 ];
->>>>>>> origin/main
