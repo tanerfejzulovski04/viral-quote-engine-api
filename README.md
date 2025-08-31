@@ -1,16 +1,18 @@
 # Viral Quote Engine API
 
-A Laravel API with Sanctum authentication for token-based authentication, designed for SPA (Single Page Application) usage.
+A Laravel API with Sanctum authentication for token-based authentication, designed for SPA (Single Page Application) usage with extended user profile management.
 
 ## Features
 
 - Laravel Sanctum token authentication
 - User registration and login
+- Extended user profile management (timezone, plan, trial support)
 - JWT-like token authentication for SPAs
 - RESTful API endpoints
 - Input validation with proper 422 error responses
 - Password hashing
 - CORS support
+- PostgreSQL database support
 
 ## API Endpoints
 
@@ -23,6 +25,12 @@ A Laravel API with Sanctum authentication for token-based authentication, design
 | POST | `/api/auth/logout` | Logout user | Bearer Token |
 | GET | `/api/auth/me` | Get current user | Bearer Token |
 
+### Profile Management
+
+| Method | Endpoint | Description | Authentication |
+|--------|----------|-------------|---------------|
+| PUT | `/api/me` | Update user profile (name and timezone) | Bearer Token |
+
 ### Registration
 
 **POST** `/api/auth/register`
@@ -32,7 +40,9 @@ A Laravel API with Sanctum authentication for token-based authentication, design
   "name": "John Doe",
   "email": "john@example.com",
   "password": "password123",
-  "password_confirmation": "password123"
+  "password_confirmation": "password123",
+  "timezone": "America/New_York",
+  "plan": "free"
 }
 ```
 
@@ -44,8 +54,9 @@ A Laravel API with Sanctum authentication for token-based authentication, design
     "id": 1,
     "name": "John Doe",
     "email": "john@example.com",
-    "created_at": "2025-08-27T17:00:00.000000Z",
-    "updated_at": "2025-08-27T17:00:00.000000Z"
+    "timezone": "America/New_York",
+    "plan": "free",
+    "trial_ends_at": null
   },
   "token": "your-bearer-token-here"
 }
@@ -70,8 +81,9 @@ A Laravel API with Sanctum authentication for token-based authentication, design
     "id": 1,
     "name": "John Doe",
     "email": "john@example.com",
-    "created_at": "2025-08-27T17:00:00.000000Z",
-    "updated_at": "2025-08-27T17:00:00.000000Z"
+    "timezone": "America/New_York",
+    "plan": "free",
+    "trial_ends_at": null
   },
   "token": "your-bearer-token-here"
 }
@@ -90,8 +102,37 @@ Headers: `Authorization: Bearer your-bearer-token-here`
     "id": 1,
     "name": "John Doe",
     "email": "john@example.com",
-    "created_at": "2025-08-27T17:00:00.000000Z",
-    "updated_at": "2025-08-27T17:00:00.000000Z"
+    "timezone": "America/New_York",
+    "plan": "free",
+    "trial_ends_at": null
+  }
+}
+```
+
+### Update Profile
+
+**PUT** `/api/me`
+
+Headers: `Authorization: Bearer your-bearer-token-here`
+
+```json
+{
+  "name": "John Smith",
+  "timezone": "Europe/London"
+}
+```
+
+**Response (200):**
+```json
+{
+  "message": "Profile updated successfully",
+  "user": {
+    "id": 1,
+    "name": "John Smith",
+    "email": "john@example.com",
+    "timezone": "Europe/London",
+    "plan": "free",
+    "trial_ends_at": null
   }
 }
 ```
@@ -108,6 +149,20 @@ Headers: `Authorization: Bearer your-bearer-token-here`
   "message": "Logged out successfully"
 }
 ```
+
+## Database Schema
+
+### Users Table
+
+- `id` - Primary key (auto-increment)
+- `name` - User's full name (TEXT, NOT NULL)
+- `email` - User's email (TEXT, UNIQUE, NOT NULL)
+- `password` - Hashed password (TEXT, NOT NULL)
+- `timezone` - User's timezone (TEXT, default: 'Europe/Skopje')
+- `plan` - User's subscription plan (ENUM: 'free'|'pro', default: 'free')
+- `trial_ends_at` - Trial end date (TIMESTAMP, nullable)
+- `created_at` - Creation timestamp
+- `updated_at` - Last update timestamp
 
 ## Error Responses
 
@@ -143,14 +198,30 @@ Headers: `Authorization: Bearer your-bearer-token-here`
    composer install
    ```
 
-2. Setup database:
+2. Copy environment file and configure:
    ```bash
-   php setup-db.php
+   cp .env.example .env
+   php artisan key:generate
    ```
 
-3. Start the server:
+3. Configure your database in `.env`:
+   ```
+   DB_CONNECTION=pgsql
+   DB_HOST=127.0.0.1
+   DB_PORT=5432
+   DB_DATABASE=viral_quote_engine
+   DB_USERNAME=postgres
+   DB_PASSWORD=your_password
+   ```
+
+4. Run migrations:
    ```bash
-   php -S localhost:8000 api-server.php
+   php artisan migrate
+   ```
+
+5. Start the development server:
+   ```bash
+   php artisan serve
    ```
 
 ## Testing
@@ -163,8 +234,9 @@ Run the test suite:
 ## Implementation Notes
 
 - Uses Laravel Sanctum for token-based authentication
-- SQLite database for simplicity
+- PostgreSQL database (configurable via .env)
 - Tokens are bearer tokens suitable for SPA usage
-- Passwords are hashed using PHP's `password_hash()`
+- Passwords are hashed using Laravel's built-in hashing
 - Full CORS support for frontend integration
+- Extended user model with timezone, plan, and trial support
 - Proper HTTP status codes and error messages

@@ -16,6 +16,8 @@ class AuthController extends Controller
             'name' => 'required|string|max:255',
             'email' => 'required|string|email|max:255|unique:users',
             'password' => 'required|string|min:8|confirmed',
+            'timezone' => 'sometimes|string|max:255',
+            'plan' => 'sometimes|in:free,pro',
         ]);
 
         if ($validator->fails()) {
@@ -29,13 +31,22 @@ class AuthController extends Controller
             'name' => $request->name,
             'email' => $request->email,
             'password' => Hash::make($request->password),
+            'timezone' => $request->timezone ?? 'Europe/Skopje',
+            'plan' => $request->plan ?? 'free',
         ]);
 
         $token = $user->createToken('api-token')->plainTextToken;
 
         return response()->json([
             'message' => 'User registered successfully',
-            'user' => $user,
+            'user' => [
+                'id' => $user->id,
+                'name' => $user->name,
+                'email' => $user->email,
+                'timezone' => $user->timezone,
+                'plan' => $user->plan,
+                'trial_ends_at' => $user->trial_ends_at,
+            ],
             'token' => $token
         ], 201);
     }
@@ -65,7 +76,14 @@ class AuthController extends Controller
 
         return response()->json([
             'message' => 'Login successful',
-            'user' => $user,
+            'user' => [
+                'id' => $user->id,
+                'name' => $user->name,
+                'email' => $user->email,
+                'timezone' => $user->timezone,
+                'plan' => $user->plan,
+                'trial_ends_at' => $user->trial_ends_at,
+            ],
             'token' => $token
         ]);
     }
@@ -82,7 +100,14 @@ class AuthController extends Controller
     public function me(Request $request)
     {
         return response()->json([
-            'user' => $request->user()
+            'user' => [
+                'id' => $request->user()->id,
+                'name' => $request->user()->name,
+                'email' => $request->user()->email,
+                'timezone' => $request->user()->timezone,
+                'plan' => $request->user()->plan,
+                'trial_ends_at' => $request->user()->trial_ends_at,
+            ]
         ]);
     }
 }
