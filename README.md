@@ -1,59 +1,154 @@
 # Viral Quote Engine API
 
-A Laravel API for managing user profiles with authentication and the users table implementation.
+A Laravel API with Sanctum authentication for token-based authentication, designed for SPA (Single Page Application) usage with extended user profile management.
 
 ## Features
 
-- User registration and authentication using Laravel Sanctum
-- User profile management with timezone and plan support
-- PostgreSQL database with comprehensive users table
-- RESTful API endpoints with proper validation
-
-## Installation
-
-1. Clone the repository
-2. Install dependencies:
-   ```bash
-   composer install
-   ```
-3. Copy environment file and configure:
-   ```bash
-   cp .env.example .env
-   php artisan key:generate
-   ```
-4. Configure your database in `.env`:
-   ```
-   DB_CONNECTION=pgsql
-   DB_HOST=127.0.0.1
-   DB_PORT=5432
-   DB_DATABASE=viral_quote_engine
-   DB_USERNAME=postgres
-   DB_PASSWORD=your_password
-   ```
-5. Run migrations:
-   ```bash
-   php artisan migrate
-   ```
-6. Start the development server:
-   ```bash
-   php artisan serve
-   ```
+- Laravel Sanctum token authentication
+- User registration and login
+- Extended user profile management (timezone, plan, trial support)
+- JWT-like token authentication for SPAs
+- RESTful API endpoints
+- Input validation with proper 422 error responses
+- Password hashing
+- CORS support
+- PostgreSQL database support
 
 ## API Endpoints
 
-### Authentication (Testing)
+### Authentication
 
-- **POST** `/api/auth/register` - Register a new user
-- **POST** `/api/auth/login` - Login user
+| Method | Endpoint | Description | Authentication |
+|--------|----------|-------------|---------------|
+| POST | `/api/auth/register` | Register a new user | No |
+| POST | `/api/auth/login` | Login user | No |
+| POST | `/api/auth/logout` | Logout user | Bearer Token |
+| GET | `/api/auth/me` | Get current user | Bearer Token |
 
 ### Profile Management
 
-- **GET** `/api/auth/me` - Get current authenticated user profile (requires authentication)
-- **PUT** `/api/me` - Update user profile (name and timezone) (requires authentication)
+| Method | Endpoint | Description | Authentication |
+|--------|----------|-------------|---------------|
+| PUT | `/api/me` | Update user profile (name and timezone) | Bearer Token |
 
-### Health Check
+### Registration
 
-- **GET** `/api/health` - Health check endpoint
+**POST** `/api/auth/register`
+
+```json
+{
+  "name": "John Doe",
+  "email": "john@example.com",
+  "password": "password123",
+  "password_confirmation": "password123",
+  "timezone": "America/New_York",
+  "plan": "free"
+}
+```
+
+**Response (201):**
+```json
+{
+  "message": "User registered successfully",
+  "user": {
+    "id": 1,
+    "name": "John Doe",
+    "email": "john@example.com",
+    "timezone": "America/New_York",
+    "plan": "free",
+    "trial_ends_at": null
+  },
+  "token": "your-bearer-token-here"
+}
+```
+
+### Login
+
+**POST** `/api/auth/login`
+
+```json
+{
+  "email": "john@example.com",
+  "password": "password123"
+}
+```
+
+**Response (200):**
+```json
+{
+  "message": "Login successful",
+  "user": {
+    "id": 1,
+    "name": "John Doe",
+    "email": "john@example.com",
+    "timezone": "America/New_York",
+    "plan": "free",
+    "trial_ends_at": null
+  },
+  "token": "your-bearer-token-here"
+}
+```
+
+### Get Current User
+
+**GET** `/api/auth/me`
+
+Headers: `Authorization: Bearer your-bearer-token-here`
+
+**Response (200):**
+```json
+{
+  "user": {
+    "id": 1,
+    "name": "John Doe",
+    "email": "john@example.com",
+    "timezone": "America/New_York",
+    "plan": "free",
+    "trial_ends_at": null
+  }
+}
+```
+
+### Update Profile
+
+**PUT** `/api/me`
+
+Headers: `Authorization: Bearer your-bearer-token-here`
+
+```json
+{
+  "name": "John Smith",
+  "timezone": "Europe/London"
+}
+```
+
+**Response (200):**
+```json
+{
+  "message": "Profile updated successfully",
+  "user": {
+    "id": 1,
+    "name": "John Smith",
+    "email": "john@example.com",
+    "timezone": "Europe/London",
+    "plan": "free",
+    "trial_ends_at": null
+  }
+}
+```
+
+### Logout
+
+**POST** `/api/auth/logout`
+
+Headers: `Authorization: Bearer your-bearer-token-here`
+
+**Response (200):**
+```json
+{
+  "message": "Logged out successfully"
+}
+```
 
 ## Database Schema
 
@@ -69,53 +164,79 @@ A Laravel API for managing user profiles with authentication and the users table
 - `created_at` - Creation timestamp
 - `updated_at` - Last update timestamp
 
-## Usage Examples
+## Error Responses
 
-### Register a User
-```bash
-curl -X POST http://localhost:8000/api/auth/register \
-  -H "Content-Type: application/json" \
-  -d '{
-    "name": "John Doe",
-    "email": "john@example.com",
-    "password": "password123",
-    "timezone": "America/New_York",
-    "plan": "free"
-  }'
+### Validation Errors (422)
+```json
+{
+  "message": "The given data was invalid.",
+  "errors": {
+    "email": ["The email field is required."],
+    "password": ["The password must be at least 8 characters."]
+  }
+}
 ```
 
-### Login
-```bash
-curl -X POST http://localhost:8000/api/auth/login \
-  -H "Content-Type: application/json" \
-  -d '{
-    "email": "john@example.com",
-    "password": "password123"
-  }'
+### Authentication Errors (401)
+```json
+{
+  "message": "Unauthenticated"
+}
 ```
 
-### Get Profile
-```bash
-curl -X GET http://localhost:8000/api/auth/me \
-  -H "Authorization: Bearer YOUR_TOKEN"
+### Invalid Credentials (401)
+```json
+{
+  "message": "Invalid credentials"
+}
 ```
 
-### Update Profile
+## Setup
+
+1. Install dependencies:
+   ```bash
+   composer install
+   ```
+
+2. Copy environment file and configure:
+   ```bash
+   cp .env.example .env
+   php artisan key:generate
+   ```
+
+3. Configure your database in `.env`:
+   ```
+   DB_CONNECTION=pgsql
+   DB_HOST=127.0.0.1
+   DB_PORT=5432
+   DB_DATABASE=viral_quote_engine
+   DB_USERNAME=postgres
+   DB_PASSWORD=your_password
+   ```
+
+4. Run migrations:
+   ```bash
+   php artisan migrate
+   ```
+
+5. Start the development server:
+   ```bash
+   php artisan serve
+   ```
+
+## Testing
+
+Run the test suite:
 ```bash
-curl -X PUT http://localhost:8000/api/me \
-  -H "Authorization: Bearer YOUR_TOKEN" \
-  -H "Content-Type: application/json" \
-  -d '{
-    "name": "John Smith",
-    "timezone": "Europe/London"
-  }'
+./vendor/bin/phpunit
 ```
 
-## Technical Details
+## Implementation Notes
 
-- Built with Laravel 11
-- Uses Laravel Sanctum for API authentication
+- Uses Laravel Sanctum for token-based authentication
 - PostgreSQL database (configurable via .env)
-- Follows Laravel best practices for API development
-- Input validation and error handling
-- Secure password hashing
+- Tokens are bearer tokens suitable for SPA usage
+- Passwords are hashed using Laravel's built-in hashing
+- Full CORS support for frontend integration
+- Extended user model with timezone, plan, and trial support
+- Proper HTTP status codes and error messages
